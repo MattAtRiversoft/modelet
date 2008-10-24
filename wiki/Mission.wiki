@@ -1,0 +1,4 @@
+= Mission =
+ * If you hate handling JDBC Connection and Resultset, nor those Object-Relational Mapping framework that are powerful but need time to learning. You can choose a new light weight, easy to use, and no JDBC handing framework.
+
+ * Developer doesn’t have to acquire long time of framework training, thus can rapidly join project development immediately, and increase productivity and quality.
