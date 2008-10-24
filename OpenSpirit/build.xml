@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project name="open-spirit" basedir="." default="core-jar">
+
+	<property name="native.encoding" value="utf-8" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="bin.dir" value="${basedir}/bin" />
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="develop.lib" value="${basedir}/develop-lib" />
+	
+	<splash imageurl="file:SpiritLogo.jpg"/>
+	
+	<path id="project.classpath">
+		<path location="${bin.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="compile">
+		<javac srcdir="${src.dir}" destdir="${bin.dir}">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+  
+  <target name="native2ascii">
+    <native2ascii encoding="${native.encoding}" src="${src.dir}" dest="${bin.dir}" includes="**/*.${native.encoding}" ext=".properties" />
+    <delete>
+      <fileset dir="${bin.dir}" includes="**/*.${native.encoding}" />
+    </delete>
+  </target>
+
+	<target name="core-jar" depends="compile,native2ascii">
+		<jar jarfile="${dist.dir}/modelet.jar">
+			<fileset dir="${bin.dir}" includes="modelet/**">
+			</fileset>
+		</jar>
+	</target>
+
+</project>
