@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop" 
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			                     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+			                     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+  
+  <!-- pooled data source -->
+  <bean id="defaultDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName">
+      <value>${default.jdbc.driverClassName}</value>
+    </property>
+    <property name="url">
+      <value>${default.jdbc.url}</value>
+    </property>
+    <property name="username">
+      <value>${default.jdbc.username}</value>
+    </property>
+    <property name="password">
+      <value>${default.jdbc.password}</value>
+    </property>
+    <property name="maxActive">
+      <value>100</value>
+    </property>
+  </bean>
+
+  <bean id="lazyConnDataSourceProxy" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+    <property name="targetDataSource" ref="defaultDataSource" />
+  </bean>
+
+  <bean id="transactionalOltpDatasource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+    <property name="targetDataSource" ref="lazyConnDataSourceProxy" />
+  </bean>
+
+  <!-- spring database transaction manager -->
+  <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="defaultDataSource" />
+  </bean>
+
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="defaultDataSource" />
+  </bean>
+
+  <bean id="queryRunner" class="org.apache.commons.dbutils.QueryRunner">
+    <property name="dataSource" ref="defaultDataSource" />
+  </bean>
+
+  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true" />
+
+  <!-- 
+  <tx:advice id="txAdvice" transaction-manager="txManager">
+    <tx:attributes>
+      <tx:method name="create*" read-only="false" rollback-for="tw.com.settour.oakmont.core.logic.LogicException" />
+      <tx:method name="*" />
+    </tx:attributes>
+  </tx:advice>
+   -->
+</beans>
