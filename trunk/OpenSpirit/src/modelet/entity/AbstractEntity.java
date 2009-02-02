@@ -41,5 +41,11 @@ public abstract class AbstractEntity implements Entity {
 	public void setTxnMode(TxnMode txnMode) {
 		this.txnMode = txnMode;
 	}
+	
+	public void afterSave() {
+  }
+
+  public void beforeSave() {
+  }
 
 }

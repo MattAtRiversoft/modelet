@@ -17,7 +17,7 @@ import org.apache.commons.beanutils.MethodUtils;
 public class EntityHelper {
 
 	/**
-   * §â³o­Óentity ªºproperty name©Mproperty value ¶ë¨ìMap ¤¤, (¥]§t©Ò¦³ super classªºproperty), ¥H¨Ñ²Õ¦¨SQL statement
+   * ï¿½ï¿½oï¿½ï¿½entity ï¿½ï¿½property nameï¿½Mproperty value ï¿½ï¿½ï¿½Map ï¿½ï¿½, (ï¿½]ï¿½tï¿½Ò¦ï¿½ super classï¿½ï¿½property), ï¿½Hï¿½Ñ²Õ¦ï¿½SQL statement
    */
   public static Map<String, Object> convert(Entity entity) {
     
@@ -34,7 +34,8 @@ public class EntityHelper {
         continue;
 
       String prefix = "get";
-      if (field.getType() == boolean.class)
+      Class fieldType = field.getType();
+      if (fieldType == boolean.class || fieldType == Boolean.class)
         prefix = "is";
       
       String methodName = prefix + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
@@ -57,7 +58,7 @@ public class EntityHelper {
             fieldValue = "0"; //false
         }
         
-        //­n¤¹³\§âtable Äæ¦ì¸ê®Æull, ¦]¬°¦³¥i¯à´N¬O­n§â­È³]¬°null
+        //ï¿½nï¿½ï¿½ï¿½\ï¿½ï¿½table ï¿½ï¿½ï¿½ï¿½ï¿½ull, ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½Nï¿½Oï¿½nï¿½ï¿½È³]ï¿½ï¿½null
         //if (fieldValue != null)
           value.put(fieldName, fieldValue);
       }
