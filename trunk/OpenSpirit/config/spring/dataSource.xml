@@ -27,16 +27,7 @@
       <value>100</value>
     </property>
   </bean>
-
-  <bean id="lazyConnDataSourceProxy" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
-    <property name="targetDataSource" ref="defaultDataSource" />
-  </bean>
-
-  <bean id="transactionalOltpDatasource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
-    <property name="targetDataSource" ref="lazyConnDataSourceProxy" />
-  </bean>
-
-  <!-- spring database transaction manager -->
+  
   <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="defaultDataSource" />
   </bean>
@@ -50,13 +41,4 @@
   </bean>
 
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true" />
-
-  <!-- 
-  <tx:advice id="txAdvice" transaction-manager="txManager">
-    <tx:attributes>
-      <tx:method name="create*" read-only="false" rollback-for="tw.com.settour.oakmont.core.logic.LogicException" />
-      <tx:method name="*" />
-    </tx:attributes>
-  </tx:advice>
-   -->
 </beans>
