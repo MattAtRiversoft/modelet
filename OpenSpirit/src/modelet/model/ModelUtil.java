@@ -14,7 +14,7 @@ import org.apache.commons.beanutils.MethodUtils;
 
 
 public class ModelUtil {
-	
+  
   public static void setEntityKeyValue(AbstractEntity entity, String setter, Object newId) {
   
     try {
@@ -172,7 +172,7 @@ public class ModelUtil {
 
   
 ///**
-// * ¨Ì¾Úentity ªºsetter ©Ò±µ¨üªºparameter type, §ânewIdÂà«¬
+// * ï¿½Ì¾ï¿½entity ï¿½ï¿½setter ï¿½Ò±ï¿½ï¿½ï¿½parameter type, ï¿½ï¿½newIdï¿½à«¬
 // */
 //private static Object testParameterType(AbstractEntity entity, String setter, Object newId) {
 //	

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -17,6 +18,11 @@ import javax.sql.DataSource;
 import modelet.entity.Entity;
 import modelet.entity.SystemIncrementEntity;
 import modelet.entity.TxnMode;
+import modelet.model.dataroller.DataRoller;
+import modelet.model.dataroller.EntityDataRoller;
+import modelet.model.dataroller.MapDataRoller;
+import modelet.model.paging.DefaultPageContainer;
+import modelet.model.paging.PageContainer;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -34,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("defaultModel")
 @Transactional(readOnly = true)
-public class DefaultModel {
+public class DefaultModel implements Model {
 
 	private static final Log LOG = LogFactory.getLog(DefaultModel.class);
   private static final Logger EXP_LOG = Logger.getLogger("exceptionLog");
@@ -45,7 +51,16 @@ public class DefaultModel {
 
 	private boolean txnSuccessful = true;
   private String txnErrorStack = null;
+  private boolean swallowException = false;
   
+  public boolean isSwallowException() {
+    return swallowException;
+  }
+  
+  public void setSwallowException(boolean swallowException) {
+    this.swallowException = swallowException;
+  }
+
   public String getTxnErrorStack() {
 		return txnErrorStack;
 	}
@@ -129,6 +144,7 @@ public class DefaultModel {
 		StatementSet stmtSet = ModelUtil.buildPreparedUpdateStatement(entity);
 		try {
 			int returnCode = jdbcTemplate.update(stmtSet.getSql(), stmtSet.getParams());
+			LOG.info("Model INFO :" + stmtSet.getSql() + " param : " + Arrays.toString(stmtSet.getParams()));
 			LOG.info("UPDATE returnCode : [" + returnCode + "]");
 		}
     catch (DataAccessException e) {
@@ -173,6 +189,61 @@ public class DefaultModel {
     return entities;
   }
 
+  public PageContainer<SortedMap<String, Object>> findWithPaging(String sql, Object[] params, final int page, final int rowsPerPage) throws ModelException {
+    
+    PageContainer<SortedMap<String, Object>> pageContainer = null;
+    try {
+      
+      RstHandler<PageContainer<SortedMap<String, Object>>> rstHandler = new RstHandler<PageContainer<SortedMap<String, Object>>>() {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        PageContainer<SortedMap<String, Object>> handleRst(ResultSet rst) {
+          
+          final PageContainer<SortedMap<String, Object>> pageContainer = new DefaultPageContainer<SortedMap<String,Object>>();
+          DataRoller dataRoller = new MapDataRoller();
+          dataRoller.roll(rst, page, rowsPerPage);
+          return pageContainer;
+        }
+        
+      };
+      
+      pageContainer = executeSql(sql, params, rstHandler);
+    }
+    catch (SQLException e) {
+      EXP_LOG.error("Fail to execute query: " + sql + " param : " + Arrays.toString(params), e);
+      throw new ModelException("Fail to execute query", e);
+    }
+    return pageContainer;
+  }
+  
+  public <E extends Entity> PageContainer<E> findWithPaging(String sql, Object[] params, final Class<E> clazz, final int page, final int rowsPerPage) throws ModelException {
+    
+    PageContainer<E> pageContainer = new DefaultPageContainer<E>();
+    try {
+      RstHandler<PageContainer<E>> rstHandler = new RstHandler<PageContainer<E>>() {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        PageContainer<E> handleRst(ResultSet rst) {
+          
+          final PageContainer<E> pageContainer = new DefaultPageContainer<E>();
+          DataRoller dataRoller = new EntityDataRoller<E>(clazz);
+          dataRoller.roll(rst, page, rowsPerPage);
+          return pageContainer;
+        }
+        
+      };
+      
+      pageContainer = executeSql(sql, params, rstHandler);
+    }
+    catch (SQLException e) {
+      EXP_LOG.error("Fail to execute query: " + sql, e);
+      throw new TransactionRollbackedException("查詢失敗", e);
+    }
+    return pageContainer;
+  }
+  
 	@Resource(name = "defaultDataSource")
 	public void setDataSource(DataSource dataSource) {
 	  this.dataSource = dataSource;
@@ -203,8 +274,8 @@ public class DefaultModel {
 	private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
   	A rs = null;
+  	Connection cnct = getDataSource().getConnection();
   	try {
-  		Connection cnct = getDataSource().getConnection();
 	    PreparedStatement stmt = cnct.prepareStatement(sql);
 	    for (int i=0; params != null && (i<params.length); i++) {
 	    	Object obj = params[i];
@@ -223,9 +294,9 @@ public class DefaultModel {
   		e.printStackTrace();
   		throw e;
   	}
-		//  	finally {
-		//  		closeConnection();
-		//  	}
+  	finally {
+  	  cnct.close();
+  	}
     return rs;
   }
   
