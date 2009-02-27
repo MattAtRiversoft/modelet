@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="spirit/*.java" kind="src" path="src"/>
+	<classpathentry kind="src" path="test-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep.jar"/>
 	<classpathentry kind="lib" path="lib/commons-attributes-api.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.6.1.jar"/>
@@ -38,8 +40,5 @@
 	<classpathentry kind="lib" path="optional-lib/rife-continuations.jar"/>
 	<classpathentry kind="lib" path="optional-lib/servlet-api-3.0.pre1.jar"/>
 	<classpathentry kind="lib" path="optional-lib/tyrex-1.0.jar"/>
-	<classpathentry kind="lib" path="optional-lib/webwork-2.2.5.jar"/>
-	<classpathentry kind="lib" path="optional-lib/xwork-tiger.jar"/>
-	<classpathentry kind="lib" path="optional-lib/xwork.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

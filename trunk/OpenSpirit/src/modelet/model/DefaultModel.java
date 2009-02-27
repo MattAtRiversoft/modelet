@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 
 import javax.annotation.Resource;
@@ -27,6 +28,7 @@ import modelet.model.paging.PageContainer;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -170,7 +172,25 @@ public class DefaultModel implements Model {
     }
 	}
 	
-	public <E extends Entity> List<E> find(String sql, Object[] params, Class<E> clazz) {
+	@SuppressWarnings("unchecked")
+  public List<Map<String, Object>> find(String sql, Object[] params) {
+	  
+	  MapListHandler rsHandler = new MapListHandler();
+	  List<Map<String, Object>> entities = new ArrayList<Map<String, Object>>();
+	  try {
+      convertDateIn(params);
+      entities = (List<Map<String, Object>>) getQueryRunner().query(sql, params, rsHandler);
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+      logSqlError(e, sql, params);
+      logExceptionStack(e);
+    }
+    return entities;
+	}
+	
+	@SuppressWarnings("unchecked")
+  public <E extends Entity> List<E> find(String sql, Object[] params, Class<E> clazz) {
     
     ResultSetHandler rsHandler = new BeanListHandler(clazz);
     List<E> entities = new ArrayList<E>(0);
@@ -238,8 +258,8 @@ public class DefaultModel implements Model {
       pageContainer = executeSql(sql, params, rstHandler);
     }
     catch (SQLException e) {
-      EXP_LOG.error("Fail to execute query: " + sql, e);
-      throw new TransactionRollbackedException("查詢失敗", e);
+      EXP_LOG.error("Fail to execute query: " + sql + " param : " + Arrays.toString(params), e);
+      throw new TransactionRollbackedException("Fail to execute query", e);
     }
     return pageContainer;
   }
