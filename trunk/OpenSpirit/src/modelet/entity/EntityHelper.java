@@ -1,6 +1,7 @@
 package modelet.entity;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,9 +35,9 @@ public class EntityHelper {
         continue;
 
       String prefix = "get";
-      Class fieldType = field.getType();
-      if (fieldType == boolean.class || fieldType == Boolean.class)
-        prefix = "is";
+//      Class fieldType = field.getType();
+//      if (fieldType == boolean.class || fieldType == Boolean.class)
+//        prefix = "is";
       
       String methodName = prefix + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
       try {
@@ -57,10 +58,10 @@ public class EntityHelper {
           else
             fieldValue = "0"; //false
         }
-        
-        //�n���\��table �����ull, �]�����i��N�O�n��ȳ]��null
-        //if (fieldValue != null)
+
+        if (fieldValue != null) {
           value.put(fieldName, fieldValue);
+        }
       }
       catch (Exception e) {
         e.printStackTrace();
@@ -69,4 +70,5 @@ public class EntityHelper {
     }
     return value;
   }
+  
 }
