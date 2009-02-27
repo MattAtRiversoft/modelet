@@ -8,18 +8,19 @@ import java.util.List;
 public class ReflactionUtil {
   
   /**
-   * §â¤@­Óclass ¤¤ªºproperty, ±Æ°£static»Pfinal ªº³¡¤À, ³q³q¥[¨ìlist¤¤
+   * ï¿½ï¿½@ï¿½ï¿½class ï¿½ï¿½ï¿½ï¿½property, ï¿½Æ°ï¿½staticï¿½Pfinal ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½qï¿½qï¿½[ï¿½ï¿½listï¿½ï¿½
    * @param fieldsCabinet is a list of Field
    * @param clazz is a 
    */
   public static void retrieveFields(List fieldsCabinet, Class clazz) {
     
     Class superClass = clazz.getSuperclass();
-    if (superClass != null)
+    if (superClass != null) {
       retrieveFields(fieldsCabinet, superClass);
+    }
     
     Field[] fields = clazz.getDeclaredFields();
-    for (int i=0; i<fields.length; i++){
+    for (int i=0; i<fields.length; i++) {
       Field field = (Field) fields[i];
       
       int modifier = field.getModifiers();
