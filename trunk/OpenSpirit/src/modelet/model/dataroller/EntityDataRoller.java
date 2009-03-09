@@ -30,12 +30,25 @@ public class EntityDataRoller<E extends Entity> extends DataRoller<E> {
         continue;
       for (Method method : publicSetterMethods) {
         if (method.getName().substring(3).equalsIgnoreCase(column.getName())) {
+          if (isSetterParamAEnum(method)) {
+            Class[] clazzs =  method.getParameterTypes();
+            columnValue = Enum.valueOf(clazzs[0], columnValue.toString());
+          }
           MethodUtils.invokeMethod(entity, method.getName(), columnValue);
           break;
         }
       }
     }
     return entity;
+  }
+  
+  private boolean isSetterParamAEnum(Method method) {
+    
+    Class[] clazzs =  method.getParameterTypes();
+    if (clazzs.length != 1) {
+      throw new RuntimeException("method setter should have at least one paramter.");
+    }
+    return clazzs[0].isEnum();
   }
   
   private List<Method> getPublicSetterMethods(Class clazz) {

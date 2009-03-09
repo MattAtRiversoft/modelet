@@ -1,7 +1,6 @@
 package modelet.entity;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,9 +16,6 @@ import org.apache.commons.beanutils.MethodUtils;
 
 public class EntityHelper {
 
-	/**
-   * ��o��entity ��property name�Mproperty value ���Map ��, (�]�t�Ҧ� super class��property), �H�Ѳզ�SQL statement
-   */
   public static Map<String, Object> convert(Entity entity) {
     
     Map<String, Object> value = new HashMap<String, Object>();
@@ -42,9 +38,12 @@ public class EntityHelper {
       String methodName = prefix + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
       try {
         Object fieldValue = MethodUtils.invokeMethod(entity, methodName, null);
+        if (fieldValue != null && fieldValue.getClass().isEnum()) {
+          fieldValue = fieldValue.toString();
+        }
+        
         if (fieldValue instanceof String) {
           fieldValue = ((String)fieldValue).replaceAll("'", "''");
-          //fieldValue = "'" + fieldValue + "'"; because prepared statement used, no need to add field value
         }
         else if ((fieldValue instanceof Calendar)) {
         	fieldValue = new Timestamp(((Calendar)fieldValue).getTimeInMillis());
