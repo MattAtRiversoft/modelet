@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -26,15 +25,13 @@ import modelet.model.paging.DefaultPageContainer;
 import modelet.model.paging.PageContainer;
 
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -175,38 +172,65 @@ public class DefaultModel implements Model {
 	@SuppressWarnings("unchecked")
   public List<Map<String, Object>> find(String sql, Object[] params) {
 	  
-	  MapListHandler rsHandler = new MapListHandler();
-	  List<Map<String, Object>> entities = new ArrayList<Map<String, Object>>();
-	  try {
-      convertDateIn(params);
-      entities = (List<Map<String, Object>>) getQueryRunner().query(sql, params, rsHandler);
-    }
-    catch (SQLException e) {
-      e.printStackTrace();
-      logSqlError(e, sql, params);
-      logExceptionStack(e);
-    }
+	  RowMapper rowMapper = new RowMapper() {
+      
+      public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+        
+        MapDataRoller roller = new MapDataRoller();
+        Map<String, Object> row = roller.rollSingleRow(rs);
+        return row;
+      }
+      
+    };
+    List<Map<String, Object>> entities = jdbcTemplate.query(sql, params, rowMapper);
     return entities;
+    
+//	  MapListHandler rsHandler = new MapListHandler();
+//	  List<Map<String, Object>> entities = new ArrayList<Map<String, Object>>();
+//	  try {
+//      convertDateIn(params);
+//      entities = (List<Map<String, Object>>) getQueryRunner().query(sql, params, rsHandler);
+//    }
+//    catch (SQLException e) {
+//      e.printStackTrace();
+//      logSqlError(e, sql, params);
+//      logExceptionStack(e);
+//    }
+//    return entities;
 	}
 	
 	@SuppressWarnings("unchecked")
-  public <E extends Entity> List<E> find(String sql, Object[] params, Class<E> clazz) {
+  public <E extends Entity> List<E> find(String sql, Object[] params, final Class<E> clazz) {
     
-    ResultSetHandler rsHandler = new BeanListHandler(clazz);
-    List<E> entities = new ArrayList<E>(0);
-    try {
-    	convertDateIn(params);
-    	entities = (List<E>) getQueryRunner().query(sql, params, rsHandler);
-    	for (Entity e: entities) {
-    		e.setTxnMode(TxnMode.UPDATE);
-    	}
-    }
-    catch (SQLException e) {
-    	e.printStackTrace();
-    	logSqlError(e, sql, params);
-    	logExceptionStack(e);
-    }
-    return entities;
+	  RowMapper rowMapper = new RowMapper() {
+	    
+      public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+        
+        EntityDataRoller<E> roller = new EntityDataRoller<E>(clazz);
+        E e = roller.rollSingleRow(rs);
+        e.setTxnMode(TxnMode.UPDATE);
+        return e;
+      }
+	    
+	  };
+	  List<E> entities = jdbcTemplate.query(sql, params, rowMapper);
+	  return entities;
+	  
+//    ResultSetHandler rsHandler = new BeanListHandler(clazz);
+//    List<E> entities = new ArrayList<E>(0);
+//    try {
+//    	convertDateIn(params);
+//    	entities = (List<E>) getQueryRunner().query(sql, params, rsHandler);
+//    	for (Entity e: entities) {
+//    		e.setTxnMode(TxnMode.UPDATE);
+//    	}
+//    }
+//    catch (SQLException e) {
+//    	e.printStackTrace();
+//    	logSqlError(e, sql, params);
+//    	logExceptionStack(e);
+//    }
+//    return entities;
   }
 
   public PageContainer<SortedMap<String, Object>> findWithPaging(String sql, Object[] params, final int page, final int rowsPerPage) throws ModelException {
@@ -264,6 +288,26 @@ public class DefaultModel implements Model {
     return pageContainer;
   }
   
+  public int executeSql(String sql, Object[] params) throws ModelException {
+    
+    int count = 0;
+    try {
+      for (int i=0; params != null && (i<params.length); i++) {
+        Object obj = params[i];
+        if (obj instanceof Date) {
+          obj = new Timestamp(((Date)obj).getTime());
+          params[i] = obj;
+        }
+      }
+      count = jdbcTemplate.update(sql, params);
+    }
+    catch (DataAccessException e) {
+      EXP_LOG.error("Fail to execute statement: " + sql + " param : " + Arrays.toString(params), e);
+      throw new ModelException("Fail to execute update sql", e);
+    }
+    return count;
+  }
+  
 	@Resource(name = "defaultDataSource")
 	public void setDataSource(DataSource dataSource) {
 	  this.dataSource = dataSource;
@@ -290,7 +334,7 @@ public class DefaultModel implements Model {
 	protected QueryRunner getQueryRunner() {
 		return queryRunner;
 	}
-
+	
 	private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
   	A rs = null;
@@ -318,7 +362,7 @@ public class DefaultModel implements Model {
   	  cnct.close();
   	}
     return rs;
-  }
+	}
   
   abstract class RstHandler<A> {
   	abstract A handleRst(ResultSet rst);

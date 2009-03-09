@@ -22,7 +22,20 @@ public abstract class DataRoller<E> {
     this.pageContainer = pageContainer;
   }
   
+  public E rollSingleRow(ResultSet rst) {
+    
+    E entity = null;
+    try {
+      List<Column> columns = fetchColumnNames(rst);
+      entity = processRow(columns, rst);
+    } catch (Exception e) {
+      exceptionHandler(e);
+    }
+    return entity;
+  }
+  
   public void roll(ResultSet rst) {
+    
     try {
       List<Column> columns = fetchColumnNames(rst);
       while (rst.next()) {
