@@ -298,6 +298,10 @@ public class DefaultModel implements Model {
           obj = new Timestamp(((Date)obj).getTime());
           params[i] = obj;
         }
+        else if (obj.getClass().isEnum()) {
+          obj = obj.toString();
+          params[i] = obj;
+        }
       }
       count = jdbcTemplate.update(sql, params);
     }
@@ -346,6 +350,10 @@ public class DefaultModel implements Model {
 	    	if (obj instanceof Date) {
 	    		obj = new Timestamp(((Date)obj).getTime());
 	    		params[i] = obj;
+	    	}
+	    	else if (obj.getClass().isEnum()) {
+	    	  obj = obj.toString();
+	    	  params[i] = obj;
 	    	}
 	      stmt.setObject(i+1, params[i]);
 	    }
