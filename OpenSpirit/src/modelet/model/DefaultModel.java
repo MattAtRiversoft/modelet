@@ -182,6 +182,7 @@ public class DefaultModel implements Model {
       }
       
     };
+    convertParams(params);
     List<Map<String, Object>> entities = jdbcTemplate.query(sql, params, rowMapper);
     return entities;
     
@@ -213,6 +214,7 @@ public class DefaultModel implements Model {
       }
 	    
 	  };
+	  convertParams(params);
 	  List<E> entities = jdbcTemplate.query(sql, params, rowMapper);
 	  return entities;
 	  
@@ -292,17 +294,18 @@ public class DefaultModel implements Model {
     
     int count = 0;
     try {
-      for (int i=0; params != null && (i<params.length); i++) {
-        Object obj = params[i];
-        if (obj instanceof Date) {
-          obj = new Timestamp(((Date)obj).getTime());
-          params[i] = obj;
-        }
-        else if (obj.getClass().isEnum()) {
-          obj = obj.toString();
-          params[i] = obj;
-        }
-      }
+      convertParams(params);
+//      for (int i=0; params != null && (i<params.length); i++) {
+//        Object obj = params[i];
+//        if (obj instanceof Date) {
+//          obj = new Timestamp(((Date)obj).getTime());
+//          params[i] = obj;
+//        }
+//        else if (obj.getClass().isEnum()) {
+//          obj = obj.toString();
+//          params[i] = obj;
+//        }
+//      }
       count = jdbcTemplate.update(sql, params);
     }
     catch (DataAccessException e) {
@@ -345,18 +348,19 @@ public class DefaultModel implements Model {
   	Connection cnct = getDataSource().getConnection();
   	try {
 	    PreparedStatement stmt = cnct.prepareStatement(sql);
-	    for (int i=0; params != null && (i<params.length); i++) {
-	    	Object obj = params[i];
-	    	if (obj instanceof Date) {
-	    		obj = new Timestamp(((Date)obj).getTime());
-	    		params[i] = obj;
-	    	}
-	    	else if (obj.getClass().isEnum()) {
-	    	  obj = obj.toString();
-	    	  params[i] = obj;
-	    	}
-	      stmt.setObject(i+1, params[i]);
-	    }
+	    convertParams(params);
+//	    for (int i=0; params != null && (i<params.length); i++) {
+//	    	Object obj = params[i];
+//	    	if (obj instanceof Date) {
+//	    		obj = new Timestamp(((Date)obj).getTime());
+//	    		params[i] = obj;
+//	    	}
+//	    	else if (obj.getClass().isEnum()) {
+//	    	  obj = obj.toString();
+//	    	  params[i] = obj;
+//	    	}
+//	      stmt.setObject(i+1, params[i]);
+//	    }
 	    ResultSet rst = stmt.executeQuery();
 	    rs = handler.handleRst(rst);
 	    rst.close();
@@ -372,6 +376,21 @@ public class DefaultModel implements Model {
     return rs;
 	}
   
+	private void convertParams(Object[] params) {
+	
+	  for (int i=0; params != null && (i<params.length); i++) {
+      Object obj = params[i];
+      if (obj instanceof Date) {
+        obj = new Timestamp(((Date)obj).getTime());
+        params[i] = obj;
+      }
+      else if (obj.getClass().isEnum()) {
+        obj = obj.toString();
+        params[i] = obj;
+      }
+    }
+	}
+	
   abstract class RstHandler<A> {
   	abstract A handleRst(ResultSet rst);
   }
