@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import modelet.entity.Entity;
+import modelet.model.paging.PageContainer;
 
 import org.apache.commons.beanutils.MethodUtils;
 
@@ -19,6 +20,12 @@ public class EntityDataRoller<E extends Entity> extends DataRoller<E> {
     this.clazz = clazz;
   }
   
+  public EntityDataRoller(Class clazz, PageContainer<E> pageContainer) {
+    
+    super(pageContainer);
+    this.clazz = clazz;
+  }
+
   @Override
   protected E processRow(List<Column> columns, ResultSet rst) throws Exception {
     

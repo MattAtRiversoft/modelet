@@ -12,4 +12,6 @@ public interface PageContainer<E extends Object> {
 	
 	public int getTotalRecords();
 	public void setTotalRecords(int totalRecords);
+	
+	public List<String> generatePageNumbers();
 }

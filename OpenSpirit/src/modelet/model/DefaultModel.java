@@ -169,6 +169,20 @@ public class DefaultModel implements Model {
     }
 	}
 	
+	public <E extends Entity> E findOne(String sql, Object[] params, Class<E> clazz) {
+	
+    try {
+      E entity = (E) Class.forName(clazz.getName()).newInstance();
+  	  List<E> entities = find(sql, params, clazz);
+  	  if (entities != null && entities.size() > 0) {
+  	    entity = entities.get(0);
+  	  }
+  	  return entity;
+    } catch (Exception e) {
+      throw new ModelException("Can not create instance of " + clazz.getName(), e);
+    }
+	}
+	
 	@SuppressWarnings("unchecked")
   public List<Map<String, Object>> find(String sql, Object[] params) {
 	  
@@ -247,7 +261,7 @@ public class DefaultModel implements Model {
         PageContainer<SortedMap<String, Object>> handleRst(ResultSet rst) {
           
           final PageContainer<SortedMap<String, Object>> pageContainer = new DefaultPageContainer<SortedMap<String,Object>>();
-          DataRoller dataRoller = new MapDataRoller();
+          DataRoller dataRoller = new MapDataRoller(pageContainer);
           dataRoller.roll(rst, page, rowsPerPage);
           return pageContainer;
         }
@@ -274,7 +288,7 @@ public class DefaultModel implements Model {
         PageContainer<E> handleRst(ResultSet rst) {
           
           final PageContainer<E> pageContainer = new DefaultPageContainer<E>();
-          DataRoller dataRoller = new EntityDataRoller<E>(clazz);
+          DataRoller dataRoller = new EntityDataRoller<E>(clazz, pageContainer);
           dataRoller.roll(rst, page, rowsPerPage);
           return pageContainer;
         }
@@ -290,6 +304,7 @@ public class DefaultModel implements Model {
     return pageContainer;
   }
   
+  @Transactional(readOnly=false)
   public int executeSql(String sql, Object[] params) throws ModelException {
     
     int count = 0;
@@ -383,6 +398,12 @@ public class DefaultModel implements Model {
       if (obj instanceof Date) {
         obj = new Timestamp(((Date)obj).getTime());
         params[i] = obj;
+      }
+      else if (obj instanceof Boolean) {
+        if (((Boolean)obj).booleanValue())
+          params[i] = "1"; //true
+        else
+          params[i] = "0"; //false
       }
       else if (obj.getClass().isEnum()) {
         obj = obj.toString();
