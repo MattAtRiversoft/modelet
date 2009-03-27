@@ -32,4 +32,13 @@ public class DefaultPageContainer<E extends Object> implements PageContainer<E> 
 	public void setTotalRecords(int totalRecords) {
 		this.totalRecords = totalRecords;
 	}
+	
+	public List<String> generatePageNumbers() {
+	  
+	  List<String> pages = new ArrayList<String>();
+	  for (int i=0; i<totalPages; i++) {
+	    pages.add(String.valueOf(i+1));
+	  }
+	  return pages;
+	}
 }
