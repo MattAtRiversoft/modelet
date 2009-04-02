@@ -223,7 +223,7 @@ public class DefaultModel implements Model {
         
         EntityDataRoller<E> roller = new EntityDataRoller<E>(clazz);
         E e = roller.rollSingleRow(rs);
-        e.setTxnMode(TxnMode.UPDATE);
+//        e.setTxnMode(TxnMode.UPDATE);
         return e;
       }
 	    

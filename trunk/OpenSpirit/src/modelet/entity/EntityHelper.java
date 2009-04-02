@@ -3,6 +3,7 @@ package modelet.entity;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +39,14 @@ public class EntityHelper {
       String methodName = prefix + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
       try {
         Object fieldValue = MethodUtils.invokeMethod(entity, methodName, null);
+        if (fieldValue != null && fieldValue.getClass().isArray()) {
+          fieldValue = Arrays.toString((Object[])fieldValue);
+          if (fieldValue.equals("null"))
+            fieldValue = null;
+          else 
+            fieldValue = ((String)fieldValue).substring(1, ((String)fieldValue).length()-1);
+        }
+        
         if (fieldValue != null && fieldValue.getClass().isEnum()) {
           fieldValue = fieldValue.toString();
         }
