@@ -364,18 +364,9 @@ public class DefaultModel implements Model {
   	try {
 	    PreparedStatement stmt = cnct.prepareStatement(sql);
 	    convertParams(params);
-//	    for (int i=0; params != null && (i<params.length); i++) {
-//	    	Object obj = params[i];
-//	    	if (obj instanceof Date) {
-//	    		obj = new Timestamp(((Date)obj).getTime());
-//	    		params[i] = obj;
-//	    	}
-//	    	else if (obj.getClass().isEnum()) {
-//	    	  obj = obj.toString();
-//	    	  params[i] = obj;
-//	    	}
-//	      stmt.setObject(i+1, params[i]);
-//	    }
+	    for (int i=0; params != null && (i<params.length); i++) {
+	      stmt.setObject(i+1, params[i]);
+	    }
 	    ResultSet rst = stmt.executeQuery();
 	    rs = handler.handleRst(rst);
 	    rst.close();
