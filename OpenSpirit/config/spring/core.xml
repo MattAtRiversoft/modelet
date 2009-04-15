@@ -24,4 +24,10 @@
     </property>
   </bean>
   
+  <bean id="rowsPerPage" class="java.lang.Integer" scope="singleton">
+    <constructor-arg>
+      <value>${rowsPerPage}</value>
+    </constructor-arg>
+  </bean>
+  
 </beans>       
