@@ -23,6 +23,7 @@ import modelet.model.dataroller.EntityDataRoller;
 import modelet.model.dataroller.MapDataRoller;
 import modelet.model.paging.DefaultPageContainer;
 import modelet.model.paging.PageContainer;
+import modelet.model.paging.PagingElement;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.logging.Log;
@@ -249,6 +250,35 @@ public class DefaultModel implements Model {
 //    return entities;
   }
 
+	public PageContainer<SortedMap<String, Object>> findWithPaging(String sql, Object[] params, final PagingElement pagingElement) throws ModelException {
+    
+    PageContainer<SortedMap<String, Object>> pageContainer = null;
+    try {
+      
+      RstHandler<PageContainer<SortedMap<String, Object>>> rstHandler = new RstHandler<PageContainer<SortedMap<String, Object>>>() {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        PageContainer<SortedMap<String, Object>> handleRst(ResultSet rst) {
+          
+          final PageContainer<SortedMap<String, Object>> pageContainer = new DefaultPageContainer<SortedMap<String,Object>>();
+          DataRoller dataRoller = new MapDataRoller(pageContainer);
+          dataRoller.roll(rst, pagingElement);
+          return pageContainer;
+        }
+        
+      };
+      
+      pageContainer = executeSql(sql, params, rstHandler);
+    }
+    catch (SQLException e) {
+      EXP_LOG.error("Fail to execute query: " + sql + " param : " + Arrays.toString(params), e);
+      throw new ModelException("Fail to execute query", e);
+    }
+    return pageContainer;
+  }
+
+	@Deprecated
   public PageContainer<SortedMap<String, Object>> findWithPaging(String sql, Object[] params, final int page, final int rowsPerPage) throws ModelException {
     
     PageContainer<SortedMap<String, Object>> pageContainer = null;
@@ -277,6 +307,34 @@ public class DefaultModel implements Model {
     return pageContainer;
   }
   
+	public <E extends Entity> PageContainer<E> findWithPaging(String sql, Object[] params, final Class<E> clazz, final PagingElement pagingElement) throws ModelException {
+    
+    PageContainer<E> pageContainer = new DefaultPageContainer<E>();
+    try {
+      RstHandler<PageContainer<E>> rstHandler = new RstHandler<PageContainer<E>>() {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        PageContainer<E> handleRst(ResultSet rst) {
+          
+          final PageContainer<E> pageContainer = new DefaultPageContainer<E>();
+          DataRoller dataRoller = new EntityDataRoller<E>(clazz, pageContainer);
+          dataRoller.roll(rst, pagingElement);
+          return pageContainer;
+        }
+        
+      };
+      
+      pageContainer = executeSql(sql, params, rstHandler);
+    }
+    catch (SQLException e) {
+      EXP_LOG.error("Fail to execute query: " + sql + " param : " + Arrays.toString(params), e);
+      throw new TransactionRollbackedException("Fail to execute query", e);
+    }
+    return pageContainer;
+  }
+
+  @Deprecated
   public <E extends Entity> PageContainer<E> findWithPaging(String sql, Object[] params, final Class<E> clazz, final int page, final int rowsPerPage) throws ModelException {
     
     PageContainer<E> pageContainer = new DefaultPageContainer<E>();
