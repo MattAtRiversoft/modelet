@@ -2,6 +2,11 @@ package modelet.entity;
 
 import java.io.Serializable;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component("sessionContext")
+@Scope("session")
 public class SessionContext implements Serializable {
 
 	private Login login = new DefaultLogin();
