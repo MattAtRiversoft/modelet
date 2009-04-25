@@ -36,9 +36,5 @@
     <property name="dataSource" ref="defaultDataSource" />
   </bean>
 
-  <bean id="queryRunner" class="org.apache.commons.dbutils.QueryRunner">
-    <property name="dataSource" ref="defaultDataSource" />
-  </bean>
-
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true" />
 </beans>

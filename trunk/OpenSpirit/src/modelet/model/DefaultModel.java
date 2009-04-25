@@ -25,7 +25,6 @@ import modelet.model.paging.DefaultPageContainer;
 import modelet.model.paging.PageContainer;
 import modelet.model.paging.PagingElement;
 
-import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -47,7 +46,7 @@ public class DefaultModel implements Model {
   
 	protected DataSource dataSource;
 	protected JdbcTemplate jdbcTemplate;
-	protected QueryRunner queryRunner;
+//	protected QueryRunner queryRunner;
 
 	private boolean txnSuccessful = true;
   private String txnErrorStack = null;
@@ -398,10 +397,10 @@ public class DefaultModel implements Model {
 	  this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	@Resource(name = "queryRunner")
-	public void setQueryRunner(QueryRunner queryRunner) {
-	  this.queryRunner = queryRunner;
-	}
+//	@Resource(name = "queryRunner")
+//	public void setQueryRunner(QueryRunner queryRunner) {
+//	  this.queryRunner = queryRunner;
+//	}
 	
 	protected DataSource getDataSource() {
 		return dataSource;
@@ -411,9 +410,9 @@ public class DefaultModel implements Model {
 		return jdbcTemplate;
 	}
 
-	protected QueryRunner getQueryRunner() {
-		return queryRunner;
-	}
+//	protected QueryRunner getQueryRunner() {
+//		return queryRunner;
+//	}
 	
 	private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
