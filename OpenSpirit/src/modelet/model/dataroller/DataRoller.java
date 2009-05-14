@@ -167,7 +167,7 @@ public abstract class DataRoller<E> {
     ResultSetMetaData metadata = rst.getMetaData();
     for (int i=1; i<=metadata.getColumnCount(); i++) {
       Column column = new Column();
-      column.setName(metadata.getColumnName(i));
+      column.setName(metadata.getColumnLabel(i)); //since MySQL JDBC driver won't return alias name while using getColumnName, so change to getColumnLabel
       column.setType(metadata.getColumnType(i));
       columnNames.add(column);
     }
