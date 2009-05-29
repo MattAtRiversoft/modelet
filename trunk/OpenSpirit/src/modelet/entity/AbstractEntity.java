@@ -1,9 +1,10 @@
 package modelet.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractEntity implements Entity {
+public abstract class AbstractEntity implements Entity, Serializable {
 
 	private Object id;
 	private TxnMode txnMode = TxnMode.INSERT;
@@ -24,7 +25,6 @@ public abstract class AbstractEntity implements Entity {
 		return fields;
 	}
 
-
 	public Object getId() {
 		return this.id;
 	}
@@ -32,7 +32,6 @@ public abstract class AbstractEntity implements Entity {
 	public void setId(Object id) {
 		this.id = id;
 	}
-
 
 	public TxnMode getTxnMode() {
 		return this.txnMode;
@@ -46,6 +45,29 @@ public abstract class AbstractEntity implements Entity {
   }
 
   public void beforeSave() {
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    
+    if (obj == null)
+      return false;
+    
+    if (!(obj instanceof Entity))
+      return false;
+    
+    AbstractEntity src = (AbstractEntity) obj;
+    Object srcId = src.getId();
+    
+    if (this.id != null && srcId != null)
+      return this.id.equals(srcId);
+    else
+      return false;
+  }
+
+  @Override
+  public String toString() {
+    return "id=" + this.id + ", txnMode=" + this.txnMode.toString();
   }
 
 }
