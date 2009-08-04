@@ -57,4 +57,9 @@ public interface Entity {
 	 * After this entity is update to database, this method will be called. 
 	 */
 	public void afterSave();
+	
+	/**
+	 * Tell framework to append field with null value to sql statement
+	 */
+	public boolean isAllowNullValue();
 }

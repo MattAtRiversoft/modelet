@@ -16,7 +16,7 @@ import org.apache.commons.beanutils.MethodUtils;
 
 
 public class EntityHelper {
-
+  
   public static Map<String, Object> convert(Entity entity) {
     
     Map<String, Object> value = new HashMap<String, Object>();
@@ -67,7 +67,7 @@ public class EntityHelper {
             fieldValue = "0"; //false
         }
 
-        if (fieldValue != null) {
+        if (fieldValue != null || entity.isAllowNullValue()) {
           value.put(fieldName, fieldValue);
         }
       }

@@ -45,9 +45,9 @@ public class ModelUtil {
 
     StringBuffer fieldNames = new StringBuffer();
     StringBuffer fieldMarks = new StringBuffer();
-    List fieldValues = new ArrayList();
+    List<Object> fieldValues = new ArrayList<Object>();
     Map<String, Object> fieldsAndValues = EntityHelper.convert(entity);
-    Set entries = fieldsAndValues.entrySet();
+    Set<Map.Entry<String, Object>> entries = fieldsAndValues.entrySet();
     for (Iterator i=entries.iterator(); i.hasNext();) {
       Map.Entry entry = (Map.Entry) i.next();
       fieldNames.append(entry.getKey()).append(",");
