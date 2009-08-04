@@ -8,13 +8,15 @@ public abstract class AbstractEntity implements Entity, Serializable {
 
 	private Object id;
 	private TxnMode txnMode = TxnMode.INSERT;
-	
+	private boolean allowNullValue = false;
 	
 	public List<String> getExclusiveFields() {
 	
 		List<String> fields = new ArrayList<String>();
 		fields.add("id");
 		fields.add("txnMode");
+		fields.add("allowNullValue");
+		
 		return fields;
 	}
 	
@@ -68,6 +70,14 @@ public abstract class AbstractEntity implements Entity, Serializable {
   @Override
   public String toString() {
     return "id=" + this.id + ", txnMode=" + this.txnMode.toString();
+  }
+
+  public boolean isAllowNullValue() {
+    return this.allowNullValue;
+  }
+  
+  public void setAllowNullValue(boolean allow) {
+    this.allowNullValue = allow;
   }
 
 }
