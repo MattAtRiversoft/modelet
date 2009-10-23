@@ -25,6 +25,10 @@
     </property>
   </bean>
   
+  <bean id="defaultSessionContext" class="modelet.context.DefaultSessionContext" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+  
   <bean id="rowsPerPage" class="java.lang.Integer" scope="singleton">
     <constructor-arg>
       <value>${rowsPerPage}</value>
