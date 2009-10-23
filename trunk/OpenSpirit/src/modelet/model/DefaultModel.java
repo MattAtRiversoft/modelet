@@ -15,6 +15,8 @@ import java.util.SortedMap;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import modelet.context.SessionContext;
+import modelet.entity.AppEntity;
 import modelet.entity.Entity;
 import modelet.entity.SystemIncrementEntity;
 import modelet.entity.TxnMode;
@@ -28,6 +30,7 @@ import modelet.model.paging.PagingElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -44,9 +47,9 @@ public class DefaultModel implements Model {
 	private static final Log LOG = LogFactory.getLog(DefaultModel.class);
   private static final Logger EXP_LOG = Logger.getLogger("exceptionLog");
   
-	protected DataSource dataSource;
-	protected JdbcTemplate jdbcTemplate;
-//	protected QueryRunner queryRunner;
+	private DataSource dataSource;
+	private JdbcTemplate jdbcTemplate;
+	private SessionContext sessionContext;
 
 	private boolean txnSuccessful = true;
   private String txnErrorStack = null;
@@ -91,6 +94,8 @@ public class DefaultModel implements Model {
   	if (txnMode == null)
   		throw new ModelException("Please assign action type(insert, update, delete) before persist entity to database.");
 
+  	injectLoginInfo(entity);
+  	
   	entity.beforeSave();
   	if (txnMode.equals(TxnMode.INSERT))
   		insert(entity);
@@ -102,6 +107,19 @@ public class DefaultModel implements Model {
   	entity.afterSave();
   }
   
+  private void injectLoginInfo(Entity entity) {
+    
+    TxnMode txnMode = entity.getTxnMode();
+    if (entity instanceof AppEntity) {
+      if (txnMode.equals(TxnMode.INSERT)) {
+        ((AppEntity)entity).setCreateDate(new Date());
+        ((AppEntity)entity).setCreator(sessionContext.getLogin().getLoginId());
+      }
+      ((AppEntity)entity).setModifyDate(new Date());
+      ((AppEntity)entity).setModofier(sessionContext.getLogin().getLoginId());
+    }
+  }
+
 	private void insert(final Entity entity) {
 
 		final StatementSet stmtSet = ModelUtil.buildPreparedCreateStatement(entity);
@@ -397,11 +415,6 @@ public class DefaultModel implements Model {
 	  this.jdbcTemplate = jdbcTemplate;
 	}
 	
-//	@Resource(name = "queryRunner")
-//	public void setQueryRunner(QueryRunner queryRunner) {
-//	  this.queryRunner = queryRunner;
-//	}
-	
 	protected DataSource getDataSource() {
 		return dataSource;
 	}
@@ -409,12 +422,17 @@ public class DefaultModel implements Model {
 	protected JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
-
-//	protected QueryRunner getQueryRunner() {
-//		return queryRunner;
-//	}
 	
-	private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
+  public SessionContext getSessionContext() {
+    return sessionContext;
+  }
+  
+  @Resource(name = "defaultSessionContext")
+  public void setSessionContext(SessionContext sessionContext) {
+    this.sessionContext = sessionContext;
+  }
+
+  private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
   	A rs = null;
   	Connection cnct = getDataSource().getConnection();

@@ -1,14 +1,13 @@
-package modelet.entity;
+package modelet.context;
 
-import java.util.Locale;
 
 public class DefaultLogin implements Login {
 
 	private String login;
 	
-	public Locale getLocale() {
-		return Locale.getDefault();
-	}
+//	public Locale getLocale() {
+//		return Locale.getDefault();
+//	}
 
 	public String getLoginId() {
 		return this.login;

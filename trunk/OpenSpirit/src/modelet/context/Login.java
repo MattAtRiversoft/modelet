@@ -1,10 +1,9 @@
-package modelet.entity;
+package modelet.context;
 
-import java.util.Locale;
 
 public interface Login {
 
 	public String getLoginId();
 	public void setLoginId(String loginId);
-	public Locale getLocale();
+//	public Locale getLocale();
 }
