@@ -31,6 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -42,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("defaultModel")
 @Transactional(readOnly = true)
+@Primary
 public class DefaultModel implements Model {
 
 	private static final Log LOG = LogFactory.getLog(DefaultModel.class);
@@ -405,13 +408,15 @@ public class DefaultModel implements Model {
     return count;
   }
   
-	@Resource(name = "defaultDataSource")
-	public void setDataSource(DataSource dataSource) {
+	//_Resource(name = "defaultDataSource")
+  @Autowired
+	public void setDataSource(@Qualifier("defaultDataSource") DataSource dataSource) {
 	  this.dataSource = dataSource;
 	}
 	
-	@Resource(name = "jdbcTemplate")
-	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+	//_Resource(name = "jdbcTemplate")
+  @Autowired
+	public void setJdbcTemplate(@Qualifier("jdbcTemplate") JdbcTemplate jdbcTemplate) {
 	  this.jdbcTemplate = jdbcTemplate;
 	}
 	

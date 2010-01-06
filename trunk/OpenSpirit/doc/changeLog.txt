@@ -1,0 +1,2 @@
+2010-1-6
+1. Upgrade Spring to 3.0 release. Assign DefaultModel as @Primary bean. Because there might be multiple DataSource or JDBCTemplate definition.

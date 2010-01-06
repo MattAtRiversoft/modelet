@@ -18,16 +18,7 @@
 	<classpathentry kind="lib" path="lib/commons-pool.jar"/>
 	<classpathentry kind="lib" path="lib/datafile-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/oscore.jar"/>
-	<classpathentry kind="lib" path="lib/spring-aop.jar"/>
-	<classpathentry kind="lib" path="lib/spring-beans.jar" sourcepath="D:/java/lib/spring-framework-2.5/dist/module-sources/spring-beans-sources.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context.jar" sourcepath="D:/java/lib/spring-framework-2.5/dist/spring-sources.jar"/>
-	<classpathentry kind="lib" path="lib/spring-core.jar" sourcepath="D:/java/lib/spring-framework-2.5/dist/module-sources/spring-core-sources.jar"/>
 	<classpathentry kind="lib" path="lib/common-annotations.jar"/>
-	<classpathentry kind="lib" path="lib/spring.jar" sourcepath="/Users/matt/Java/lib/spring-framework-2.5.6/dist/spring-sources.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-support.jar"/>
-	<classpathentry kind="lib" path="lib/spring-jdbc.jar"/>
-	<classpathentry kind="lib" path="lib/spring-orm.jar"/>
-	<classpathentry kind="lib" path="lib/spring-tx.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="optional-lib/hsqldb.jar"/>
@@ -40,5 +31,13 @@
 	<classpathentry kind="lib" path="optional-lib/rife-continuations.jar"/>
 	<classpathentry kind="lib" path="optional-lib/servlet-api-3.0.pre1.jar"/>
 	<classpathentry kind="lib" path="optional-lib/tyrex-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.aop-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.beans-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context.support-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.core-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.jdbc-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.orm-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.transaction-3.0.0.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
