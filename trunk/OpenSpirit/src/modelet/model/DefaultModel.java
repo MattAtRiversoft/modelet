@@ -91,7 +91,7 @@ public class DefaultModel implements Model {
   }
   
   @Transactional(readOnly = false)
-  public void save(Entity entity) throws ModelException {
+  public int save(Entity entity) throws ModelException {
   	
   	TxnMode txnMode = entity.getTxnMode();
   	if (txnMode == null)
@@ -99,15 +99,17 @@ public class DefaultModel implements Model {
 
   	injectLoginInfo(entity);
   	
+  	int returnCode = 0;
   	entity.beforeSave();
   	if (txnMode.equals(TxnMode.INSERT))
-  		insert(entity);
+  	  returnCode = insert(entity);
   	else if (txnMode.equals(TxnMode.UPDATE))
-  		update(entity);
+  	  returnCode = update(entity);
   	else if (txnMode.equals(TxnMode.DELETE))
-  		delete(entity);
+  	  returnCode = delete(entity);
   	
   	entity.afterSave();
+  	return returnCode;
   }
   
   private void injectLoginInfo(Entity entity) {
@@ -123,13 +125,16 @@ public class DefaultModel implements Model {
     }
   }
 
-	private void insert(final Entity entity) {
+	private int insert(final Entity entity) {
 
+	  int returnCode = 0;
 		final StatementSet stmtSet = ModelUtil.buildPreparedCreateStatement(entity);
     try {
-    	int returnCode;
     	if (entity instanceof SystemIncrementEntity) {
-    		returnCode= jdbcTemplate.update(stmtSet.getSql(), stmtSet.getParams());
+    		returnCode = jdbcTemplate.update(stmtSet.getSql(), stmtSet.getParams());
+    	}
+    	else if (entity.getId() != null) {
+    	  returnCode = executeStatementSet(stmtSet);
     	}
     	else {
 	      KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -157,29 +162,38 @@ public class DefaultModel implements Model {
     	logSqlError(e, stmtSet.getSql(), stmtSet.getParams());
     	logExceptionStack(e);
     }
+    return returnCode;
   }
 	
-	private void update(Entity entity) {
+	private int update(Entity entity) {
 		
 		StatementSet stmtSet = ModelUtil.buildPreparedUpdateStatement(entity);
-		try {
-			int returnCode = jdbcTemplate.update(stmtSet.getSql(), stmtSet.getParams());
-			LOG.info("Model INFO :" + stmtSet.getSql() + " param : " + Arrays.toString(stmtSet.getParams()));
-			LOG.info("UPDATE returnCode : [" + returnCode + "]");
-		}
-    catch (DataAccessException e) {
-    	e.printStackTrace();
-    	setTxnSuccessful(false);
-    	logSqlError(e, stmtSet.getSql(), stmtSet.getParams());
-    	logExceptionStack(e);
-    }
+		return executeStatementSet(stmtSet);
 	}
 	
-	private void delete(Entity entity) {
+	private int executeStatementSet(StatementSet stmtSet) {
+	  
+	  int returnCode = 0;
+	  try {
+      returnCode = jdbcTemplate.update(stmtSet.getSql(), stmtSet.getParams());
+      LOG.info("Model INFO :" + stmtSet.getSql() + " param : " + Arrays.toString(stmtSet.getParams()));
+      LOG.info("UPDATE returnCode : [" + returnCode + "]");
+    }
+    catch (DataAccessException e) {
+      e.printStackTrace();
+      setTxnSuccessful(false);
+      logSqlError(e, stmtSet.getSql(), stmtSet.getParams());
+      logExceptionStack(e);
+    }
+    return returnCode;
+	}
+	
+	private int delete(Entity entity) {
 		
+	  int returnCode = 0;
 		String sql = ModelUtil.buildDeleteStatement(entity);
 		try {
-			int returnCode = jdbcTemplate.update(sql);
+			returnCode = jdbcTemplate.update(sql);
 			LOG.info("DELETE returnCode : [" + returnCode + "]");
 		}
 		catch (DataAccessException e) {
@@ -188,6 +202,7 @@ public class DefaultModel implements Model {
     	logSqlError(e, sql);
     	logExceptionStack(e);
     }
+		return returnCode;
 	}
 	
 	public <E extends Entity> E findOne(String sql, Object[] params, Class<E> clazz) {
