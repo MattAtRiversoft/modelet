@@ -28,8 +28,13 @@ public class EntityHelper {
       Field field = (Field) fields.get(i);
       
       String fieldName = field.getName();
-      if (entity.getId() == null || entity.getExclusiveFields().contains(fieldName))
+      
+      if (fieldName.equalsIgnoreCase("id") && (entity.getId() != null)) {
+        ; //no skip
+      }
+      else if (entity.getExclusiveFields().contains(fieldName)) {
         continue;
+      }
 
       String prefix = "get";
 //      Class fieldType = field.getType();
