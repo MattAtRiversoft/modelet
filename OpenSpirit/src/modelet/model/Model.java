@@ -19,7 +19,7 @@ public interface Model {
   
   public <E extends Entity> E findOne(String sql, Object[] params, Class<E> clazz);
   
-  public void save(Entity entity) throws ModelException;
+  public int save(Entity entity) throws ModelException;
   public <E extends Entity> void save(List<E> entities) throws ModelException;
   
 }

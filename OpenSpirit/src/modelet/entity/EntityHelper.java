@@ -28,7 +28,7 @@ public class EntityHelper {
       Field field = (Field) fields.get(i);
       
       String fieldName = field.getName();
-      if (entity.getExclusiveFields().contains(fieldName))
+      if (entity.getId() == null || entity.getExclusiveFields().contains(fieldName))
         continue;
 
       String prefix = "get";
