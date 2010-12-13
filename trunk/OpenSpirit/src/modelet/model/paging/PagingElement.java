@@ -31,5 +31,8 @@ public class PagingElement {
     this.rowsPerPage = rowsPerPage;
   }
   
+  public String toString() {
+    return "Target page:" + this.targetPage + ", rows per page:" + this.rowsPerPage;
+  }
   
 }

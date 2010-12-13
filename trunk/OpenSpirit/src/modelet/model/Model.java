@@ -21,5 +21,6 @@ public interface Model {
   
   public int save(Entity entity) throws ModelException;
   public <E extends Entity> void save(List<E> entities) throws ModelException;
-  
+ 
+  public int executeSql(String sql, Object[] params) throws ModelException;
 }
