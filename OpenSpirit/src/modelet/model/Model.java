@@ -23,4 +23,7 @@ public interface Model {
   public <E extends Entity> void save(List<E> entities) throws ModelException;
  
   public int executeSql(String sql, Object[] params) throws ModelException;
+  
+  public <T extends Entity> T getEntityById(Long id, String tableName, Class<T> clazz);
+  public Map<String, Object> getEntityMapById(Long id, String tableName);
 }
