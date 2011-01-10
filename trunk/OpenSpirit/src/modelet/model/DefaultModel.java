@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -395,6 +396,37 @@ public class DefaultModel implements Model {
       throw new TransactionRollbackedException("Fail to execute query", e);
     }
     return pageContainer;
+  }
+  
+  public <T extends Entity> T getEntityById(Long id, String tableName, Class<T> clazz) {
+    
+    if (id == null) {
+      id = 0L;
+    }
+
+    StringBuffer sql = new StringBuffer();
+    sql.append(" select * from ").append(tableName).append(" where id=?");
+    Object[] params = {id};
+    T rs = findOne(sql.toString(), params, clazz);
+    return rs;
+  }
+  
+  
+  public Map<String, Object> getEntityMapById(Long id, String tableName) {
+    
+    if (id == null) {
+      id = 0L;
+    }
+
+    Map<String, Object> entityMap = new HashMap<String, Object>();
+    StringBuffer sql = new StringBuffer();
+    sql.append(" select * from ").append(tableName).append(" where id=?");
+    Object[] params = {id};
+    List<Map<String, Object>> rs = find(sql.toString(), params);
+    if (rs.size() > 0) {
+      entityMap = rs.get(0);
+    }
+    return entityMap;
   }
   
   @Transactional(readOnly=false)
