@@ -16,7 +16,7 @@ public final class ApplicationContextHelper {
   public static ApplicationContext getApplicationContext(boolean initMockSession) {
 
     if (applicationContext == null) {
-      ConfigurableResourceBaseApplicationContext.setResourceBase("WebContent/");
+      ConfigurableResourceBaseApplicationContext.setResourceBase("/");
       applicationContext = new ConfigurableResourceBaseApplicationContext(APPLICATION_CONTEXT);
       applicationContext.registerShutdownHook();
       if (initMockSession)
