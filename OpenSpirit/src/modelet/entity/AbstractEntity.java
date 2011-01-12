@@ -79,5 +79,17 @@ public abstract class AbstractEntity implements Entity, Serializable {
   public void setAllowNullValue(boolean allow) {
     this.allowNullValue = allow;
   }
+  
+  public boolean isNew() {
+    
+    boolean isNew = false;
+    if (getId() == null)
+      isNew = true;
+    
+    return isNew;
+  }
 
+  public boolean isUpdate() {
+    return !isNew();
+  }
 }
