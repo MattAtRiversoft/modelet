@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import modelet.context.SessionContext;
@@ -31,8 +30,11 @@ import modelet.model.paging.PagingElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,14 +48,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("defaultModel")
 @Transactional(readOnly = true)
 @Primary
-public class DefaultModel implements Model {
+public class DefaultModel implements Model, ApplicationContextAware {
 
 	private static final Log LOG = LogFactory.getLog(DefaultModel.class);
   private static final Logger EXP_LOG = Logger.getLogger("exceptionLog");
   
+  private ApplicationContext applicationContext;
+  
 	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
-	private SessionContext sessionContext;
+	//private SessionContext sessionContext;
 
 	private boolean txnSuccessful = true;
   private String txnErrorStack = null;
@@ -119,10 +123,10 @@ public class DefaultModel implements Model {
     if (entity instanceof AppEntity) {
       if (txnMode.equals(TxnMode.INSERT)) {
         ((AppEntity)entity).setCreateDate(new Date());
-        ((AppEntity)entity).setCreator(sessionContext.getLogin().getLoginId());
+        ((AppEntity)entity).setCreator(getSessionContext().getLogin().getLoginId());
       }
       ((AppEntity)entity).setModifyDate(new Date());
-      ((AppEntity)entity).setModofier(sessionContext.getLogin().getLoginId());
+      ((AppEntity)entity).setModofier(getSessionContext().getLogin().getLoginId());
     }
   }
 
@@ -476,14 +480,15 @@ public class DefaultModel implements Model {
 	}
 	
   public SessionContext getSessionContext() {
-    return sessionContext;
+    return (SessionContext) this.applicationContext.getBean("defaultSessionContext");
   }
   
-  @Resource(name = "defaultSessionContext")
+  /* Resource(name = "defaultSessionContext") 
   public void setSessionContext(SessionContext sessionContext) {
     this.sessionContext = sessionContext;
   }
-
+   */
+  
   private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
   	A rs = null;
@@ -591,4 +596,9 @@ public class DefaultModel implements Model {
   	}
   	setTxnErrorStack(content.toString());
 	}
+
+  @Override
+  public void setApplicationContext(ApplicationContext c) throws BeansException {
+    this.applicationContext = c;
+  }
 }
