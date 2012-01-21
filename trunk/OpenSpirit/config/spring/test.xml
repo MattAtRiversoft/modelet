@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop" 
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+  
+  <context:component-scan base-package="test.aop" scoped-proxy="targetClass"/>
+  
+  <bean id="helloAdvisor" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+     <property name="mappedName">
+         <value>hello*</value>
+     </property>
+     <property name="advice">
+         <ref bean="logBeforeAdvice"/>
+     </property>
+  </bean>
+    
+    
+  <bean id="helloAutoProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <property name="beanNames">
+      <list>
+        <value>hello*</value>
+      </list>
+    </property>
+    <property name="interceptorNames">
+      <value>helloAdvisor</value>
+    </property>
+  </bean>
+  
+  <!-- <bean id="helloProxy" class="org.springframework.aop.framework.ProxyFactoryBean"> 
+	  <property name="proxyInterfaces"> 
+	      <value>test.aop.IHello</value> 
+	  </property> 
+	  <property name="target"> 
+	      <ref bean="helloSpeaker"/> 
+	  </property> 
+	  <property name="interceptorNames"> 
+	      <list>
+	          <value>helloAdvisor</value> 
+	      </list> 
+	  </property> 
+  </bean> --> 
+</beans>

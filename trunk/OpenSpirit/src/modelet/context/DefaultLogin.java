@@ -3,7 +3,7 @@ package modelet.context;
 
 public class DefaultLogin implements Login {
 
-	private String login;
+	private String login = "SYSTEM";
 	
 //	public Locale getLocale() {
 //		return Locale.getDefault();

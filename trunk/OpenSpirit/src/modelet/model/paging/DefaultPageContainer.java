@@ -1,9 +1,10 @@
 package modelet.model.paging;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultPageContainer<E extends Object> implements PageContainer<E> {
+public class DefaultPageContainer<E extends Object> implements PageContainer<E>, Serializable {
 	
 	int totalPages = 0;
 	List<E> rows = new ArrayList<E>();
