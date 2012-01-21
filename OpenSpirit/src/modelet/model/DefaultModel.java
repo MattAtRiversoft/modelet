@@ -15,6 +15,7 @@ import java.util.SortedMap;
 
 import javax.sql.DataSource;
 
+import modelet.context.DefaultSessionContext;
 import modelet.context.SessionContext;
 import modelet.entity.AppEntity;
 import modelet.entity.Entity;
@@ -57,7 +58,7 @@ public class DefaultModel implements Model, ApplicationContextAware {
   
 	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
-	//private SessionContext sessionContext;
+	private SessionContext sessionContext;
 
 	private boolean txnSuccessful = true;
   private String txnErrorStack = null;
@@ -120,7 +121,7 @@ public class DefaultModel implements Model, ApplicationContextAware {
   private void injectLoginInfo(Entity entity) {
     
     TxnMode txnMode = entity.getTxnMode();
-    if (entity instanceof AppEntity) {
+    if ((entity instanceof AppEntity) && (getSessionContext() != null) && (getSessionContext().getLogin() != null)) {
       if (txnMode.equals(TxnMode.INSERT)) {
         ((AppEntity)entity).setCreateDate(new Date());
         ((AppEntity)entity).setCreator(getSessionContext().getLogin().getLoginId());
@@ -482,12 +483,15 @@ public class DefaultModel implements Model, ApplicationContextAware {
   public SessionContext getSessionContext() {
     return (SessionContext) this.applicationContext.getBean("defaultSessionContext");
   }
-  
-  /* Resource(name = "defaultSessionContext") 
-  public void setSessionContext(SessionContext sessionContext) {
-    this.sessionContext = sessionContext;
-  }
-   */
+	
+//	public SessionContext getSessionContext() {
+//	  return this.sessionContext;
+//	}
+	
+//	_Autowired(required=false)
+//  public void setSessionContext(_Qualifier("defaultSessionContext") SessionContext sessionContext) {
+//    this.sessionContext = sessionContext;
+//  }
   
   private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
