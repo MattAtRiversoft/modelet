@@ -1,0 +1,5 @@
+2010-1-6
+1. Upgrade Spring to 3.0 release. Assign DefaultModel as @Primary bean. Because there might be multiple DataSource or JDBCTemplate definition.
+
+2010-1-12
+1. Add ability to process insert mode entity which has ID value inside. Just insert entity with id, no need to retrieve incremental id from database.
