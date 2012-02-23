@@ -15,7 +15,6 @@ import java.util.SortedMap;
 
 import javax.sql.DataSource;
 
-import modelet.context.DefaultSessionContext;
 import modelet.context.SessionContext;
 import modelet.entity.AppEntity;
 import modelet.entity.Entity;
@@ -58,6 +57,7 @@ public class DefaultModel implements Model, ApplicationContextAware {
   
 	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
+
 	private SessionContext sessionContext;
 
 	private boolean txnSuccessful = true;
@@ -493,6 +493,10 @@ public class DefaultModel implements Model, ApplicationContextAware {
 //    this.sessionContext = sessionContext;
 //  }
   
+//  public void setSessionContext(SessionContext sessionContext) {
+//    this.sessionContext = sessionContext;
+//  }
+
   private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
   	A rs = null;
