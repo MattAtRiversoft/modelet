@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import modelet.context.SessionContext;
 import modelet.util.ReflactionUtil;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -84,4 +85,16 @@ public class EntityHelper {
     return value;
   }
   
+  public static void injectLoginInfo(Entity entity, SessionContext sessionContext) {
+    
+    TxnMode txnMode = entity.getTxnMode();
+    if ((entity instanceof AppEntity) && (sessionContext != null) && (sessionContext.getLogin() != null)) {
+      if (txnMode.equals(TxnMode.INSERT)) {
+        ((AppEntity)entity).setCreateDate(new Date());
+        ((AppEntity)entity).setCreator(sessionContext.getLogin().getLoginId());
+      }
+      ((AppEntity)entity).setModifyDate(new Date());
+      ((AppEntity)entity).setModofier(sessionContext.getLogin().getLoginId());
+    }
+  }
 }

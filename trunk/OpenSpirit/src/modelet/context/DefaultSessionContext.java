@@ -1,10 +1,16 @@
 package modelet.context;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-/*
-_Component("defaultSessionContext")
-_Scope("session")
-*/
+
+/**
+ * This object should not be in HTTP session scope
+ * @author matt
+ *
+ */
+@Component("defaultSessionContext")
+@Scope("prototype")
 public class DefaultSessionContext implements SessionContext {
 
   private Login login = new DefaultLogin();

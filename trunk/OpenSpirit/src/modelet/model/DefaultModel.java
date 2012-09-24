@@ -48,17 +48,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("defaultModel")
 @Transactional(readOnly = true)
 @Primary
-public class DefaultModel implements Model, ApplicationContextAware {
+public class DefaultModel implements Model {
 
 	private static final Log LOG = LogFactory.getLog(DefaultModel.class);
   private static final Logger EXP_LOG = Logger.getLogger("exceptionLog");
   
-  private ApplicationContext applicationContext;
-  
 	private DataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
-
-	private SessionContext sessionContext;
 
 	private boolean txnSuccessful = true;
   private String txnErrorStack = null;
@@ -102,8 +98,6 @@ public class DefaultModel implements Model, ApplicationContextAware {
   	TxnMode txnMode = entity.getTxnMode();
   	if (txnMode == null)
   		throw new ModelException("Please assign action type(insert, update, delete) before persist entity to database.");
-
-  	injectLoginInfo(entity);
   	
   	int returnCode = 0;
   	entity.beforeSave();
@@ -116,19 +110,6 @@ public class DefaultModel implements Model, ApplicationContextAware {
   	
   	entity.afterSave();
   	return returnCode;
-  }
-  
-  private void injectLoginInfo(Entity entity) {
-    
-    TxnMode txnMode = entity.getTxnMode();
-    if ((entity instanceof AppEntity) && (getSessionContext() != null) && (getSessionContext().getLogin() != null)) {
-      if (txnMode.equals(TxnMode.INSERT)) {
-        ((AppEntity)entity).setCreateDate(new Date());
-        ((AppEntity)entity).setCreator(getSessionContext().getLogin().getLoginId());
-      }
-      ((AppEntity)entity).setModifyDate(new Date());
-      ((AppEntity)entity).setModofier(getSessionContext().getLogin().getLoginId());
-    }
   }
 
 	private int insert(final Entity entity) {
@@ -479,23 +460,6 @@ public class DefaultModel implements Model, ApplicationContextAware {
 	protected JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
-	
-  public SessionContext getSessionContext() {
-    return (SessionContext) this.applicationContext.getBean("defaultSessionContext");
-  }
-	
-//	public SessionContext getSessionContext() {
-//	  return this.sessionContext;
-//	}
-	
-//	_Autowired(required=false)
-//  public void setSessionContext(_Qualifier("defaultSessionContext") SessionContext sessionContext) {
-//    this.sessionContext = sessionContext;
-//  }
-  
-//  public void setSessionContext(SessionContext sessionContext) {
-//    this.sessionContext = sessionContext;
-//  }
 
   private <A> A executeSql(String sql, Object[] params, RstHandler<A> handler) throws SQLException  {
   	
@@ -605,8 +569,4 @@ public class DefaultModel implements Model, ApplicationContextAware {
   	setTxnErrorStack(content.toString());
 	}
 
-  @Override
-  public void setApplicationContext(ApplicationContext c) throws BeansException {
-    this.applicationContext = c;
-  }
 }
