@@ -162,8 +162,8 @@ public class DefaultModel implements Model {
 	  
 	  int returnCode = 0;
 	  try {
+	    LOG.info("Model INFO :" + stmtSet.getSql() + " param : " + Arrays.toString(stmtSet.getParams()));
       returnCode = jdbcTemplate.update(stmtSet.getSql(), stmtSet.getParams());
-      LOG.info("Model INFO :" + stmtSet.getSql() + " param : " + Arrays.toString(stmtSet.getParams()));
       LOG.info("UPDATE returnCode : [" + returnCode + "]");
     }
     catch (DataAccessException e) {
@@ -432,7 +432,11 @@ public class DefaultModel implements Model {
 //          params[i] = obj;
 //        }
 //      }
+      LOG.info("Model INFO :" + sql + " param : " + Arrays.toString(params));
       count = jdbcTemplate.update(sql, params);
+      LOG.info("sql execution return count : [" + count + "]");
+      
+      
     }
     catch (DataAccessException e) {
       EXP_LOG.error("Fail to execute statement: " + sql + " param : " + Arrays.toString(params), e);
