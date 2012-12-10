@@ -451,7 +451,9 @@ public class DefaultModel implements Model, ApplicationContextAware {
 //          params[i] = obj;
 //        }
 //      }
+      LOG.info("Model INFO :" + sql + " param : " + Arrays.toString(params));
       count = jdbcTemplate.update(sql, params);
+      LOG.info("sql execution return count : [" + count + "]");
     }
     catch (DataAccessException e) {
       EXP_LOG.error("Fail to execute statement: " + sql + " param : " + Arrays.toString(params), e);
