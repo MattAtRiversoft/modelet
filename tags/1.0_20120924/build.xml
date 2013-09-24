@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="open-spirit" basedir="." default="core-jar">
+<project name="open-spirit_20120924" basedir="." default="core-jar">
 
 	<property name="native.encoding" value="utf-8" />
 	<property name="src.dir" value="${basedir}/src" />
@@ -31,7 +31,7 @@
   </target>
 
 	<target name="core-jar" depends="compile,native2ascii">
-		<jar jarfile="${dist.dir}/modelet.jar">
+		<jar jarfile="${dist.dir}/modelet-1.2.jar">
 			<fileset dir="${bin.dir}" includes="modelet/**">
 			</fileset>
 		</jar>

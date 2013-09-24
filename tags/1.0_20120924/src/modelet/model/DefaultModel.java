@@ -162,11 +162,12 @@ public class DefaultModel implements Model, ApplicationContextAware {
       entity.setTxnMode(TxnMode.UPDATE);
       
     }
-    catch (DataAccessException e) {
+    catch (Exception e) {
     	e.printStackTrace();
     	setTxnSuccessful(false);
     	logSqlError(e, stmtSet.getSql(), stmtSet.getParams());
     	logExceptionStack(e);
+    	throw new ModelException("Error occured while inserting data!", e);
     }
     return returnCode;
   }
@@ -185,11 +186,12 @@ public class DefaultModel implements Model, ApplicationContextAware {
       LOG.info("Model INFO :" + stmtSet.getSql() + " param : " + Arrays.toString(stmtSet.getParams()));
       LOG.info("UPDATE returnCode : [" + returnCode + "]");
     }
-    catch (DataAccessException e) {
+    catch (Exception e) {
       e.printStackTrace();
       setTxnSuccessful(false);
       logSqlError(e, stmtSet.getSql(), stmtSet.getParams());
       logExceptionStack(e);
+      throw new ModelException("Error occured while updaeing data!", e);
     }
     return returnCode;
 	}
@@ -202,11 +204,12 @@ public class DefaultModel implements Model, ApplicationContextAware {
 			returnCode = jdbcTemplate.update(sql);
 			LOG.info("DELETE returnCode : [" + returnCode + "]");
 		}
-		catch (DataAccessException e) {
+		catch (Exception e) {
     	e.printStackTrace();
     	setTxnSuccessful(false);
     	logSqlError(e, sql);
     	logExceptionStack(e);
+    	throw new ModelException("Error occured while updaeing data!", e);
     }
 		return returnCode;
 	}
@@ -319,7 +322,6 @@ public class DefaultModel implements Model, ApplicationContextAware {
     return pageContainer;
   }
 
-	@Deprecated
   public PageContainer<SortedMap<String, Object>> findWithPaging(String sql, Object[] params, final int page, final int rowsPerPage) throws ModelException {
     
     PageContainer<SortedMap<String, Object>> pageContainer = null;
@@ -375,7 +377,6 @@ public class DefaultModel implements Model, ApplicationContextAware {
     return pageContainer;
   }
 
-  @Deprecated
   public <E extends Entity> PageContainer<E> findWithPaging(String sql, Object[] params, final Class<E> clazz, final int page, final int rowsPerPage) throws ModelException {
     
     PageContainer<E> pageContainer = new DefaultPageContainer<E>();
@@ -528,6 +529,7 @@ public class DefaultModel implements Model, ApplicationContextAware {
 	
 	  for (int i=0; params != null && (i<params.length); i++) {
       Object obj = params[i];
+
       if (obj instanceof Date) {
         obj = new Timestamp(((Date)obj).getTime());
         params[i] = obj;
