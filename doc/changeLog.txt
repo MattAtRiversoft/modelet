@@ -3,3 +3,6 @@
 
 2010-1-12
 1. Add ability to process insert mode entity which has ID value inside. Just insert entity with id, no need to retrieve incremental id from database.
+
+2013-09-18
+1. Throw ModelException (is a RuntimeException) when insert, update, delete fail, to make sure caller can roll back transaction.
