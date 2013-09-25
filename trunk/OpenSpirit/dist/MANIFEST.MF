@@ -1,5 +1,1 @@
-Manifest-Version: 1.0
-Built-By: Matt Jiang
-Implementation-Vendor: Riversoft Inc.
-Implementation-Title: Modelet
-Implementation-Version: 1.2.0
+Manifest-version: 2.0
