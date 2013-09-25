@@ -56,9 +56,9 @@ public class EntityHelper {
           fieldValue = fieldValue.toString();
         }
         
-        if (fieldValue instanceof String) {
-          fieldValue = ((String)fieldValue).replaceAll("'", "''");
-        }
+//        if (fieldValue instanceof String) {
+//          fieldValue = ((String)fieldValue).replaceAll("'", "''");
+//        }
         else if ((fieldValue instanceof Calendar)) {
         	fieldValue = new Timestamp(((Calendar)fieldValue).getTimeInMillis());
         }
