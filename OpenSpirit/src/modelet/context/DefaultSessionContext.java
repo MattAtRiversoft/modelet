@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  * @author matt
  *
  */
+@Deprecated
 @Component("defaultSessionContext")
 @Scope("prototype")
 public class DefaultSessionContext implements SessionContext {

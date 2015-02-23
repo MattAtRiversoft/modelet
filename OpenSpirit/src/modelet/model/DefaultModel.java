@@ -15,7 +15,8 @@ import java.util.SortedMap;
 
 import javax.sql.DataSource;
 
-import modelet.context.SessionContext;
+import modelet.context.UserInfo;
+import modelet.context.UserInfoHolder;
 import modelet.entity.AppEntity;
 import modelet.entity.Entity;
 import modelet.entity.SystemIncrementEntity;
@@ -30,11 +31,8 @@ import modelet.model.paging.PagingElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -100,6 +98,7 @@ public class DefaultModel implements Model {
   		throw new ModelException("Please assign action type(insert, update, delete) before persist entity to database.");
   	
   	int returnCode = 0;
+  	injectSignatureAndTimestamp(entity);
   	entity.beforeSave();
   	if (txnMode.equals(TxnMode.INSERT))
   	  returnCode = insert(entity);
@@ -112,6 +111,37 @@ public class DefaultModel implements Model {
   	return returnCode;
   }
 
+  private void injectSignatureAndTimestamp(Entity entity) {
+    
+    if (entity instanceof AppEntity) {
+      
+      AppEntity appEntity = (AppEntity) entity;
+      TxnMode txnMode = entity.getTxnMode();
+      if (txnMode.equals(TxnMode.INSERT)) {
+        appEntity.setCreateDate(new Date());
+        injectUserInfo(appEntity);
+      }
+      else {
+        appEntity.setModifyDate(new Date());
+        injectUserInfo(appEntity);
+      }
+    }
+  }
+  
+  private void injectUserInfo(AppEntity appEntity) {
+    
+    UserInfo userInfo = UserInfoHolder.get();
+    if (userInfo != null) {
+      TxnMode txnMode = appEntity.getTxnMode();
+      if (txnMode.equals(TxnMode.INSERT)) {
+        appEntity.setCreator(userInfo.getLoginId());
+      }
+      else {
+        appEntity.setModofier(userInfo.getLoginId());
+      }
+    }
+  }
+  
 	private int insert(final Entity entity) {
 
 	  int returnCode = 0;
