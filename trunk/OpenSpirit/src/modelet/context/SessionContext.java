@@ -1,5 +1,6 @@
 package modelet.context;
 
+@Deprecated
 public interface SessionContext {
 
   public Login getLogin();
