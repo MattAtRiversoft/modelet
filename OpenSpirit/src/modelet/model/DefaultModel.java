@@ -15,7 +15,7 @@ import java.util.SortedMap;
 
 import javax.sql.DataSource;
 
-import modelet.context.UserInfo;
+import modelet.context.Login;
 import modelet.context.UserInfoHolder;
 import modelet.entity.AppEntity;
 import modelet.entity.Entity;
@@ -130,7 +130,7 @@ public class DefaultModel implements Model {
   
   private void injectUserInfo(AppEntity appEntity) {
     
-    UserInfo userInfo = UserInfoHolder.get();
+    Login userInfo = UserInfoHolder.get();
     if (userInfo != null) {
       TxnMode txnMode = appEntity.getTxnMode();
       if (txnMode.equals(TxnMode.INSERT)) {

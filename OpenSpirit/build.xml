@@ -31,7 +31,7 @@
   </target>
 
 	<target name="core-jar" depends="compile,native2ascii">
-		<jar jarfile="${dist.dir}/modelet-2.0.jar" manifest="${dist.dir}/MANIFEST.MF">
+		<jar jarfile="${dist.dir}/modelet-2.0.2.jar" manifest="${dist.dir}/MANIFEST.MF">
 			<fileset dir="${bin.dir}" includes="modelet/**">
 			</fileset>
 		</jar>

@@ -7,13 +7,13 @@ package modelet.context;
  */
 public class UserInfoHolder {
   
-  private static final ThreadLocal<UserInfo> meHolder = new ThreadLocal<UserInfo>();
+  private static final ThreadLocal<Login> meHolder = new ThreadLocal<Login>();
   
-  public static void put(UserInfo util) {
+  public static void put(Login util) {
     meHolder.set(util);
   }
   
-  public static UserInfo get() {
+  public static Login get() {
     return meHolder.get();
   }
 }
