@@ -17,4 +17,9 @@ public class DefaultLogin implements Login {
 		this.login = loginId;
 	}
 
+  @Override
+  public Long getDbId() {
+    throw new RuntimeException();
+  }
+
 }

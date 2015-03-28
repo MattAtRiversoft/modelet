@@ -4,6 +4,6 @@ package modelet.context;
 public interface Login {
 
 	public String getLoginId();
-	public void setLoginId(String loginId);
+	public Long getDbId();
 //	public Locale getLocale();
 }
