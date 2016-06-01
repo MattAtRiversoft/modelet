@@ -4,14 +4,25 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import modelet.entity.AbstractEntity;
+import test.AEnum;
 
 public class Book extends AbstractEntity {
 
   private String bookName;
   private BigDecimal price;
   private Date createDate;
+  private AEnum aEnum;
   
-  
+  public AEnum getAEnum() {
+    return aEnum;
+  }
+
+
+  public void setAEnum(AEnum aEnum) {
+    this.aEnum = aEnum;
+  }
+
+
   public String getBookName() {
     return bookName;
   }
